@@ -305,6 +305,24 @@ export default function TaskBoard() {
     );
   };
 
+  // Add handleAddSubtask function
+  const handleAddSubtask = (taskId: string) => {
+    const subtaskText = newSubtaskInput[taskId]?.trim();
+    if (!subtaskText) return;
+
+    setTasks(tasks =>
+      tasks.map(task =>
+        task.id === taskId
+          ? {
+              ...task,
+              subtasks: [...task.subtasks, { id: generateId(), text: subtaskText, completed: false }]
+            }
+          : task
+      )
+    );
+    setNewSubtaskInput({ ...newSubtaskInput, [taskId]: '' }); // Clear input after adding
+  };
+
   // Close color picker on click elsewhere
   React.useEffect(() => {
     if (!colorPicker.open) return;
