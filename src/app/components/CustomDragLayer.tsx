@@ -36,7 +36,7 @@ function getItemStyles(initialOffset: XYCoord | null, currentOffset: XYCoord | n
     };
   }
 
-  let { x, y } = currentOffset;
+  const { x, y } = currentOffset;
 
   // Add an offset to position the card correctly relative to the cursor
   // Adjust these values based on how you want the card to align with the cursor

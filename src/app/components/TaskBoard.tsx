@@ -41,7 +41,6 @@ const columns = [
 ];
 
 const generateId = () => Math.random().toString(36).substring(2, 9);
-const generateTaskCode = () => `TASK-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
 
 const ItemTypes = { TASK: 'task' };
 
@@ -102,7 +101,6 @@ export default function TaskBoard() {
   const [newTitle, setNewTitle] = useState('');
   const [newSubtasks, setNewSubtasks] = useState<Subtask[]>([]);
   const [editTaskId, setEditTaskId] = useState<string | null>(null);
-  const [draggedTask, setDraggedTask] = useState<Task | null>(null);
   const [taskCounter, setTaskCounter] = useState(1);
 
   // Context menu state
@@ -120,7 +118,6 @@ export default function TaskBoard() {
   }>({ taskId: null, open: false });
 
   const [newTag, setNewTag] = useState('');
-  const [tagInputOpen, setTagInputOpen] = useState(false);
 
   const [newSubtaskInput, setNewSubtaskInput] = useState<{ [key: string]: string }>({});
 
@@ -199,46 +196,13 @@ export default function TaskBoard() {
     });
   };
 
-  const handleMoveTask = (task: Task, status: TaskStatus) => {
-    setTasks(tasks =>
-      tasks.map(t =>
-        t.id === task.id ? { ...t, status } : t
-      )
-    );
-    setContextMenu({ ...contextMenu, open: false, task: null });
-  };
-
-  const handleCloseContextMenu = () => {
-    setContextMenu({ ...contextMenu, open: false, task: null });
-  };
-
-  // Close context menu on click elsewhere
+  // Fix useEffect dependency warning
   React.useEffect(() => {
     if (!contextMenu.open) return;
-    const close = () => setContextMenu({ ...contextMenu, open: false, task: null });
+    const close = () => setContextMenu(c => ({ ...c, open: false, task: null }));
     window.addEventListener('click', close);
     return () => window.removeEventListener('click', close);
-    // eslint-disable-next-line
   }, [contextMenu.open]);
-
-  // Drag and drop handlers
-  const handleDragStart = (e: React.DragEvent, task: Task) => {
-    setDraggedTask(task);
-    e.dataTransfer.effectAllowed = 'move';
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-  };
-
-  const handleDrop = (e: React.DragEvent, status: TaskStatus) => {
-    e.preventDefault();
-    if (draggedTask && draggedTask.status !== status) {
-      handleMoveTask(draggedTask, status);
-    }
-    setDraggedTask(null);
-  };
 
   // Modified handleAddTag to add a Tag object
   const handleAddTag = (task: Task, tagText: string) => {
@@ -323,10 +287,10 @@ export default function TaskBoard() {
     setNewSubtaskInput({ ...newSubtaskInput, [taskId]: '' }); // Clear input after adding
   };
 
-  // Close color picker on click elsewhere
+  // Fix useEffect dependency warning
   React.useEffect(() => {
     if (!colorPicker.open) return;
-    const close = () => setColorPicker({ ...colorPicker, open: false });
+    const close = () => setColorPicker(c => ({ ...c, open: false }));
     window.addEventListener('click', close);
     return () => window.removeEventListener('click', close);
   }, [colorPicker.open]);
